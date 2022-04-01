@@ -4,18 +4,16 @@ const { json } = require('express/lib/response');
 
 const userModel = require('../models/userModel');
 const cartModel = require('../models/cartModel');
+const { CustomError } = require('../middleware/ErrorHandler');
 
 class AuthController {
     // [GET] /news
     async register(req, res, next) {
-        const error = new Error();
         try {
             const email = req.body.email;
             const user = await userModel.findOne({ email });
             if (user) {
-                error.status = 401;
-                error.message = 'Email already exists';
-                next(error);
+                throw new CustomError(401, 'Email already exists');
             }
 
             const SALT_ROUNDS = 10;
@@ -54,29 +52,27 @@ class AuthController {
             };
             return res.json(response);
         } catch (error) {
-            error.message = 'Something went wrong';
+            if (!error.message) error.message = 'Something went wrong';
             next(error);
         }
     }
 
     async login(req, res, next) {
-        const error = new Error();
         try {
             const email = req.body.email;
             const password = req.body.password;
 
             const user = await userModel.findOne({ email });
             if (!user) {
-                error.status = 401;
-                error.message = 'Email not exists';
-                next(error);
+                throw new CustomError(401, 'Email not exists');
             }
+
+            console.log(password);
+            console.log(user.password);
 
             const isPasswordValid = bcrypt.compareSync(password, user.password);
             if (!isPasswordValid) {
-                error.status = 401;
-                error.message = 'Wrong password';
-                next(error);
+                throw new CustomError(401, 'Wrong password');
             }
 
             const accessToken = jwt.sign(
@@ -114,19 +110,16 @@ class AuthController {
             };
             return res.json(response);
         } catch (error) {
-            error.message = 'Something went wrong';
+            if (!error.message) error.message = 'Something went wrong';
             next(error);
         }
     }
 
     async refresh(req, res, next) {
-        const error = new Error();
         try {
             const refreshToken = req.body.refreshToken;
             if (!refreshToken) {
-                error.status = 400;
-                error.message = 'Cannot find refresh token';
-                next(error);
+                throw new CustomError(400, 'Cannot find refresh token');
             }
 
             const decode = jwt.verify(
@@ -134,12 +127,15 @@ class AuthController {
                 process.env.REFRESH_TOKEN_SECRET,
             );
             if (!decode) {
-                error.status = 400;
-                error.message = 'Refresh token is invalid';
-                next(error);
+                throw new CustomError(400, 'Refresh token is invalid');
+            }
+
+            const user = await userModel.findOne(decode.payload.id);
+            if (!user) {
+                throw new CustomError(401, 'User not exists');
             }
         } catch (error) {
-            error.message = 'Something went wrong';
+            if (!error.message) error.message = 'Something went wrong';
             next(error);
         }
     }

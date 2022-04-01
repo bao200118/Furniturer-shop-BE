@@ -2,6 +2,10 @@ const express = require('express');
 const dotenv = require('dotenv');
 const morgan = require('morgan');
 const db = require('../src/config/db');
+const {
+    handleError,
+    customError,
+} = require('./api/v1/middleware/ErrorHandler');
 
 dotenv.config();
 
@@ -23,6 +27,8 @@ db.connect(
 );
 
 route(app);
+
+app.use(handleError);
 
 const server = app.listen(process.env.PORT || 3000, () => {
     console.log(`Express running → PORT ${server.address().port}`);
