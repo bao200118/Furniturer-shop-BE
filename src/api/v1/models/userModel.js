@@ -17,6 +17,7 @@ const User = new Schema({
         district: { type: String, default: '' },
         province: { type: String, default: '' },
     },
+    refreshToken: { type: String, default: '' },
     createAt: { type: Date, default: Date.now },
     updateAt: { type: Date, default: Date.now },
     deleteAt: { type: Date },

@@ -7,15 +7,16 @@ const cartModel = require('../models/cartModel');
 const { CustomError } = require('../middleware/ErrorHandler');
 
 class AuthController {
-    // [GET] /news
     async register(req, res, next) {
         try {
+            //Check email is exists
             const email = req.body.email;
             const user = await userModel.findOne({ email });
             if (user) {
                 throw new CustomError(401, 'Email already exists');
             }
 
+            //Create and save user to db
             const SALT_ROUNDS = 10;
             const hashPassword = bcrypt.hashSync(
                 req.body.password,
@@ -39,18 +40,19 @@ class AuthController {
             const newSavedUser = await userModel.create(newUser);
             const { _id, password, ...other } = newSavedUser._doc;
 
+            //Create and save cart after user is save
             const newCart = {
                 id: _id,
                 product: [],
             };
             const newSavedCart = await cartModel.create(newCart);
 
+            //Return response to client
             const response = {
                 data: other,
-                status: 201,
                 message: 'Sign-up success',
             };
-            return res.json(response);
+            return res.status(201).json(response);
         } catch (error) {
             if (!error.message) error.message = 'Something went wrong';
             next(error);
@@ -59,6 +61,7 @@ class AuthController {
 
     async login(req, res, next) {
         try {
+            // Check email is exists
             const email = req.body.email;
             const password = req.body.password;
 
@@ -67,14 +70,13 @@ class AuthController {
                 throw new CustomError(401, 'Email not exists');
             }
 
-            console.log(password);
-            console.log(user.password);
-
+            // Check password is correct
             const isPasswordValid = bcrypt.compareSync(password, user.password);
             if (!isPasswordValid) {
                 throw new CustomError(401, 'Wrong password');
             }
 
+            //Create access token and refresh token
             const accessToken = jwt.sign(
                 {
                     id: user._id,
@@ -99,16 +101,17 @@ class AuthController {
                 },
             );
 
+            //Save refresh token to user
+            user.refreshToken = refreshToken;
+            user.save();
+
             const response = {
-                data: {
-                    accessToken,
-                    refreshToken,
-                    user: email,
-                },
-                status: 201,
+                accessToken,
+                refreshToken,
+                user: email,
                 message: 'Sign-in success',
             };
-            return res.json(response);
+            return res.status(201).json(response);
         } catch (error) {
             if (!error.message) error.message = 'Something went wrong';
             next(error);
@@ -117,23 +120,62 @@ class AuthController {
 
     async refresh(req, res, next) {
         try {
+            //Check access token is in header
+            let accessToken = req.headers.authorization;
+
+            //If string contain type of token, delete it
+            if (accessToken.indexOf('Bearer ') != -1)
+                accessToken = accessToken.slice(7);
+
+            if (!accessToken) {
+                throw new CustomError(400, 'Cannot find access token');
+            }
+
+            //Check access token is in body
             const refreshToken = req.body.refreshToken;
             if (!refreshToken) {
                 throw new CustomError(400, 'Cannot find refresh token');
             }
 
+            //Decode and check access token
             const decode = jwt.verify(
-                refreshToken,
-                process.env.REFRESH_TOKEN_SECRET,
+                accessToken,
+                process.env.ACCESS_TOKEN_SECRET,
+                { ignoreExpiration: true },
             );
             if (!decode) {
-                throw new CustomError(400, 'Refresh token is invalid');
+                throw new CustomError(400, 'Access token is invalid');
             }
 
-            const user = await userModel.findOne(decode.payload.id);
+            //Check decode information is correct
+            const user = await userModel.findOne({ _id: decode.id });
             if (!user) {
                 throw new CustomError(401, 'User not exists');
             }
+
+            //Check refresh token is same as token in the db
+            if (user.refreshToken != refreshToken) {
+                throw new CustomError(401, 'Refresh token is incorrect');
+            }
+
+            //Create new access token
+            const newAccessToken = jwt.sign(
+                {
+                    id: user._id,
+                    isSeller: user.isSeller,
+                },
+                process.env.ACCESS_TOKEN_SECRET,
+                {
+                    algorithm: 'HS256',
+                    expiresIn: process.env.ACCESS_TOKEN_LIFE,
+                },
+            );
+
+            const response = {
+                newAccessToken,
+                status: 201,
+            };
+            return res.json(response);
         } catch (error) {
             if (!error.message) error.message = 'Something went wrong';
             next(error);
