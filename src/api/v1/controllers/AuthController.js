@@ -4,7 +4,8 @@ const { json } = require('express/lib/response');
 
 const userModel = require('../models/userModel');
 const cartModel = require('../models/cartModel');
-const { CustomError } = require('../middleware/ErrorHandler');
+const { CustomError } = require('../util/CustomError');
+const { verifyToken } = require('../middleware/verifyToken');
 
 class AuthController {
     async register(req, res, next) {
@@ -120,17 +121,6 @@ class AuthController {
 
     async refresh(req, res, next) {
         try {
-            //Check access token is in header
-            let accessToken = req.headers.authorization;
-
-            //If string contain type of token, delete it
-            if (accessToken.indexOf('Bearer ') != -1)
-                accessToken = accessToken.slice(7);
-
-            if (!accessToken) {
-                throw new CustomError(400, 'Cannot find access token');
-            }
-
             //Check access token is in body
             const refreshToken = req.body.refreshToken;
             if (!refreshToken) {
@@ -138,17 +128,11 @@ class AuthController {
             }
 
             //Decode and check access token
-            const decode = jwt.verify(
-                accessToken,
-                process.env.ACCESS_TOKEN_SECRET,
-                { ignoreExpiration: true },
-            );
-            if (!decode) {
-                throw new CustomError(400, 'Access token is invalid');
-            }
+            verifyToken(req, res);
+            const decodeData = req.decodeData;
 
             //Check decode information is correct
-            const user = await userModel.findOne({ _id: decode.id });
+            const user = await userModel.findOne({ _id: decodeData.id });
             if (!user) {
                 throw new CustomError(401, 'User not exists');
             }
@@ -173,7 +157,6 @@ class AuthController {
 
             const response = {
                 newAccessToken,
-                status: 201,
             };
             return res.json(response);
         } catch (error) {
