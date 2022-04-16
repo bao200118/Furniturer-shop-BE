@@ -8,6 +8,7 @@ const {
 
 router.use(verifyTokenAndAuthorization);
 
+router.get('/', addressController.getAllAddress);
 router.post('/', addressController.addAddress);
 router.put('/', addressController.updateAddress);
 router.delete('/', addressController.deleteAddress);

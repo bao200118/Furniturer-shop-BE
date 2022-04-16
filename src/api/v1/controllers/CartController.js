@@ -1,8 +1,8 @@
 const { json } = require('express/lib/response');
-const userModel = require('../models/userModel');
+const cart = require('../models/userModel');
 const { CustomError } = require('../Util/CustomError');
 
-class DeliveryAddressControlller {
+class CartController {
     checkAddressExist = (arrOldAddress, newAddress) => {
         for (let i = 0; i < arrOldAddress.length; i++) {
             const oldAddress = {

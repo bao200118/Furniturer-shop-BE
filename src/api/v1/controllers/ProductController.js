@@ -1,43 +1,45 @@
 const { json } = require('express/lib/response');
-const userModel = require('../models/userModel');
+const productModel = require('../models/productModel');
 const { CustomError } = require('../Util/CustomError');
 
-class DeliveryAddressControlller {
-    checkAddressExist = (arrOldAddress, newAddress) => {
-        for (let i = 0; i < arrOldAddress.length; i++) {
-            const oldAddress = {
-                landNumber: arrOldAddress[i].landNumber,
-                ward: arrOldAddress[i].ward,
-                district: arrOldAddress[i].district,
-                province: arrOldAddress[i].province,
-            };
-            if (JSON.stringify(oldAddress) === JSON.stringify(newAddress)) {
-                throw new CustomError(409, 'Address already exist');
-            }
-        }
-    };
-
-    addAddress = async (req, res, next) => {
+class ProductController {
+    addProduct = async (req, res, next) => {
         try {
-            const user = req.user;
+            const product = await productModel.findOne({
+                category: req.body.category,
+                name: req.body.name,
+                size: req.body.size,
+                color: req.body.color,
+                material: req.body.material,
+                weight: req.body.weight,
+                price: req.body.price,
+            });
 
-            const newAddress = {
-                landNumber: req.body.landNumber,
-                ward: req.body.ward,
-                district: req.body.district,
-                province: req.body.province,
-            };
+            //Check if product is exists
+            if (product.length) {
+                if (req.body.image) product.image.push(req.body.image);
+                product.description = req.body.description;
+                product.inStock += req.body.inStock;
+                product.save();
+            } else {
+                const newProduct = {
+                    name: req.body.name,
+                    image: req.body.image,
+                    description: req.body.description,
+                    size: req.body.size,
+                    color: req.body.color,
+                    material: req.body.material,
+                    weight: req.body.weight,
+                    inStock: req.body.inStock,
+                    price: req.body.price,
+                };
 
-            this.checkAddressExist(user.address, newAddress);
-
-            user.address.push(newAddress);
-
-            user.save();
-
+                const newSaveProduct = await productModel.create(newProduct);
+            }
             const response = {
-                user,
                 message: 'Add success',
             };
+
             return res.status(201).json(response);
         } catch (error) {
             console.log(error);
@@ -127,4 +129,4 @@ class DeliveryAddressControlller {
     };
 }
 
-module.exports = new DeliveryAddressControlller();
+module.exports = new ProductController();

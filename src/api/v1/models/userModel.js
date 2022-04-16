@@ -22,7 +22,6 @@ const User = new Schema({
     refreshToken: { type: String, default: '' },
     createAt: { type: Date, default: Date.now },
     updateAt: { type: Date, default: Date.now },
-    deleteAt: { type: Date },
 });
 
 module.exports = mongoose.model('User', User);
