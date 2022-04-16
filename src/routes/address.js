@@ -1,13 +1,15 @@
 const express = require('express');
 const router = express.Router();
 
-const addressController = require('../api/v1/controllers/DeliveryAddressController');
+const addressController = require('../api/v1/controllers/AddressController');
+const {
+    verifyTokenAndAuthorization,
+} = require('../api/v1/middleware/verifyToken');
 
-router.post('/add', authController.register);
-router.post('/delete', authController.login);
-router.post('/refresh', authController.refresh);
+router.use(verifyTokenAndAuthorization);
 
-// // Default
-// router.use(siteController.dashboard);
+router.post('/', addressController.addAddress);
+router.put('/', addressController.updateAddress);
+router.delete('/', addressController.deleteAddress);
 
 module.exports = router;
