@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken');
 
 const { CustomError } = require('../Util/CustomError');
+const userModel = require('../models/userModel');
 /**
  * Verify token
  * @param {*request} req - request of client
@@ -16,6 +17,7 @@ function verifyToken(req, res, next = () => {}) {
         if (!accessToken) {
             throw new CustomError(400, 'You are not authenticated');
         }
+
         jwt.verify(
             accessToken,
             process.env.ACCESS_TOKEN_SECRET,
@@ -34,30 +36,38 @@ function verifyToken(req, res, next = () => {}) {
 }
 
 function verifyTokenAndAuthorization(req, res, next) {
-    verifyToken(req, res, () => {
-        if (req.decodeData.id === req.param.id || req.decodeData.isSeller) {
+    verifyToken(req, res, async () => {
+        try {
+            const user = await userModel.findOne({ _id: req.decodeData.id });
+            req.user = user;
             next();
-        } else
+        } catch (error) {
+            console.log(error);
             next(
                 new CustomError(
                     403,
                     "You don't have permission to do this action!",
                 ),
             );
+        }
     });
 }
 
 function verifyTokenAndAuthorizationAdmin(req, res, next) {
-    verifyToken(req, res, () => {
-        if (req.decodeData.isSeller) {
+    verifyToken(req, res, async () => {
+        try {
+            const user = await userModel.findOne({ _id: decodeData.id });
+            if (!user.isSeller) throw new Error();
+            req.user = user;
             next();
-        } else
+        } catch (error) {
             next(
                 new CustomError(
                     403,
                     "You don't have permission to do this action!",
                 ),
             );
+        }
     });
 }
 

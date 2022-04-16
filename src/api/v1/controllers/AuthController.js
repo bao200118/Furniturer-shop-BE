@@ -14,7 +14,7 @@ class AuthController {
             const email = req.body.email;
             const user = await userModel.findOne({ email });
             if (user) {
-                throw new CustomError(401, 'Email already exists');
+                throw new CustomError(409, 'Email already exists');
             }
 
             //Create and save user to db
@@ -68,13 +68,13 @@ class AuthController {
 
             const user = await userModel.findOne({ email });
             if (!user) {
-                throw new CustomError(401, 'Email not exists');
+                throw new CustomError(404, 'Email not exists');
             }
 
             // Check password is correct
             const isPasswordValid = bcrypt.compareSync(password, user.password);
             if (!isPasswordValid) {
-                throw new CustomError(401, 'Wrong password');
+                throw new CustomError(403, 'Wrong password');
             }
 
             //Create access token and refresh token
@@ -112,7 +112,7 @@ class AuthController {
                 user: email,
                 message: 'Sign-in success',
             };
-            return res.status(201).json(response);
+            return res.status(200).json(response);
         } catch (error) {
             if (!error.message) error.message = 'Something went wrong';
             next(error);
@@ -134,12 +134,12 @@ class AuthController {
             //Check decode information is correct
             const user = await userModel.findOne({ _id: decodeData.id });
             if (!user) {
-                throw new CustomError(401, 'User not exists');
+                throw new CustomError(404, 'User not exists');
             }
 
             //Check refresh token is same as token in the db
             if (user.refreshToken != refreshToken) {
-                throw new CustomError(401, 'Refresh token is incorrect');
+                throw new CustomError(403, 'Refresh token is incorrect');
             }
 
             //Create new access token

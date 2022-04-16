@@ -7,7 +7,4 @@ router.post('/sign-up', authController.register);
 router.post('/sign-in', authController.login);
 router.post('/refresh', authController.refresh);
 
-// // Default
-// router.use(siteController.dashboard);
-
 module.exports = router;
