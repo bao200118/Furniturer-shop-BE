@@ -9,8 +9,9 @@ const {
 router.use(verifyTokenAndAuthorization);
 
 router.get('/', addressController.getAllAddress);
+router.get('/:id', addressController.getAddressByID);
 router.post('/', addressController.addAddress);
-router.put('/', addressController.updateAddress);
-router.delete('/', addressController.deleteAddress);
+router.put('/:id', addressController.updateAddress);
+router.delete('/:id', addressController.deleteAddress);
 
 module.exports = router;

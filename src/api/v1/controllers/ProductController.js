@@ -1,4 +1,5 @@
 const { json } = require('express/lib/response');
+const { findByIdAndUpdate } = require('../models/productModel');
 const productModel = require('../models/productModel');
 const { CustomError } = require('../Util/CustomError');
 
@@ -6,7 +7,6 @@ class ProductController {
     addProduct = async (req, res, next) => {
         try {
             const product = await productModel.findOne({
-                category: req.body.category,
                 name: req.body.name,
                 size: req.body.size,
                 color: req.body.color,
@@ -15,15 +15,18 @@ class ProductController {
                 price: req.body.price,
             });
 
+            let newProductSave;
+
             //Check if product is exists
-            if (product.length) {
-                if (req.body.image) product.image.push(req.body.image);
+            if (product) {
+                if (req.body.image.length) product.image.push(req.body.image);
                 product.description = req.body.description;
                 product.inStock += req.body.inStock;
                 product.save();
             } else {
                 const newProduct = {
                     name: req.body.name,
+                    category: req.body.category,
                     image: req.body.image,
                     description: req.body.description,
                     size: req.body.size,
@@ -34,9 +37,11 @@ class ProductController {
                     price: req.body.price,
                 };
 
-                const newSaveProduct = await productModel.create(newProduct);
+                newProductSave = await productModel.create(newProduct);
             }
+
             const response = {
+                newProductSave,
                 message: 'Add success',
             };
 
@@ -48,36 +53,40 @@ class ProductController {
         }
     };
 
-    updateAddress = async (req, res, next) => {
+    updateProduct = async (req, res, next) => {
         try {
-            const user = req.user;
-            const id = req.body.id;
+            let product = await productModel.findOne({
+                name: req.body.name,
+                size: req.body.size,
+                color: req.body.color,
+                material: req.body.material,
+                weight: req.body.weight,
+                price: req.body.price,
+            });
 
-            const newAddress = {
-                landNumber: req.body.landNumber,
-                ward: req.body.ward,
-                district: req.body.district,
-                province: req.body.province,
-            };
+            if (product) {
+                throw new CustomError(403, 'Product already exists');
+            } else {
+                await productModel
+                    .findByIdAndUpdate(req.params.id, {
+                        name: req.body.name,
+                        category: req.body.category,
+                        image: req.body.image,
+                        description: req.body.description,
+                        size: req.body.size,
+                        color: req.body.color,
+                        material: req.body.material,
+                        weight: req.body.weight,
+                        inStock: req.body.inStock,
+                        price: req.body.price,
+                    })
+                    .exec();
+            }
 
-            this.checkAddressExist(user.address, newAddress);
-
-            await userModel
-                .findOneAndUpdate(
-                    { _id: user._id, 'address._id': id },
-                    {
-                        $set: {
-                            'address.$.landNumber': newAddress.landNumber,
-                            'address.$.ward': newAddress.ward,
-                            'address.$.district': newAddress.district,
-                            'address.$.province': newAddress.province,
-                        },
-                    },
-                )
-                .exec();
+            product = await productModel.findById(req.params.id);
 
             const response = {
-                user,
+                product,
                 message: 'Update success',
             };
             return res.json(response);
@@ -88,21 +97,14 @@ class ProductController {
         }
     };
 
-    deleteAddress = async (req, res, next) => {
+    deleteProduct = async (req, res, next) => {
         try {
-            const user = req.user;
-            const id = req.body.id;
-
             try {
-                user.address.id(id).remove();
+                await productModel.findByIdAndRemove(req.params.id).exec();
             } catch (error) {
-                throw new CustomError(404, 'Address not exists');
+                throw new CustomError(404, 'Product not exists');
             }
-
-            user.save();
-
             const response = {
-                user,
                 message: 'Remove success',
             };
             return res.json(response);
@@ -113,12 +115,63 @@ class ProductController {
         }
     };
 
-    getAllAddress = async (req, res, next) => {
+    changeProductInStock = async (req, res, next) => {
         try {
-            const user = req.user;
+            try {
+                await productModel
+                    .findByIdAndUpdate(req.params.id, {
+                        inStock: req.body.inStock,
+                    })
+                    .exec();
+            } catch (error) {
+                throw new CustomError(404, 'Product not exists');
+            }
+            const product = await productModel.findById(req.params.id);
+            const response = {
+                product,
+                message: 'Update success',
+            };
+            return res.json(response);
+        } catch (error) {
+            console.log(error);
+            if (!error.message) error.message = 'Something went wrong';
+            next(error);
+        }
+    };
+
+    getAllProduct = async (req, res, next) => {
+        try {
+            const product = await productModel.find();
 
             const response = {
-                address: user.address,
+                product,
+            };
+            return res.json(response);
+        } catch (error) {
+            console.log(error);
+            if (!error.message) error.message = 'Something went wrong';
+            next(error);
+        }
+    };
+
+    getAllProductByListID = async (req, res, next) => {
+        try {
+            let listProduct = [];
+            let listID = req.body.listID;
+
+            //List id must be array
+            if (!Array.isArray(listID))
+                throw new CustomError(400, 'List id must be array');
+
+            for (let i = 0; i < listID.length; i++) {
+                try {
+                    const product = await productModel.findById(listID[i]);
+                    listProduct.push(product);
+                } catch (error) {}
+            }
+
+            const response = {
+                products: listProduct,
             };
             return res.json(response);
         } catch (error) {

@@ -12,11 +12,11 @@ function verifyToken(req, res, next = () => {}) {
     //Check access token is in header
     try {
         const authHeader = req.headers.authorization;
-        let accessToken = authHeader.split(' ')[1];
-
-        if (!accessToken) {
+        if (!authHeader) {
             throw new CustomError(400, 'You are not authenticated');
         }
+
+        let accessToken = authHeader.split(' ')[1];
 
         jwt.verify(
             accessToken,
@@ -31,7 +31,7 @@ function verifyToken(req, res, next = () => {}) {
             },
         );
     } catch (error) {
-        next(error);
+        throw error;
     }
 }
 
@@ -56,11 +56,12 @@ function verifyTokenAndAuthorization(req, res, next) {
 function verifyTokenAndAuthorizationAdmin(req, res, next) {
     verifyToken(req, res, async () => {
         try {
-            const user = await userModel.findOne({ _id: decodeData.id });
+            const user = await userModel.findOne({ _id: req.decodeData.id });
             if (!user.isSeller) throw new Error();
             req.user = user;
             next();
         } catch (error) {
+            console.log(error);
             next(
                 new CustomError(
                     403,

@@ -5,8 +5,8 @@ const ObjectId = Schema.ObjectId;
 
 const Product = new Schema({
     id: ObjectId,
-    category: { type: String, required: true },
     name: { type: String, default: '' },
+    category: [{ type: String }],
     image: [
         {
             url: { type: String, default: '' },
@@ -17,6 +17,7 @@ const Product = new Schema({
         width: { type: Number, default: 0 },
         height: { type: Number, default: 0 },
         depth: { type: Number, default: 0 },
+        unit: { type: String, default: 'm' },
     },
     color: { type: String, default: '' },
     material: { type: String, default: '' },

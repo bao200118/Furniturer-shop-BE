@@ -48,8 +48,8 @@ class DeliveryAddressControlller {
 
     updateAddress = async (req, res, next) => {
         try {
-            const user = req.user;
-            const id = req.body.id;
+            let user = req.user;
+            const id = req.params.id;
 
             const newAddress = {
                 landNumber: req.body.landNumber,
@@ -73,7 +73,7 @@ class DeliveryAddressControlller {
                     },
                 )
                 .exec();
-
+            user = await userModel.findOne({ _id: user._id });
             const response = {
                 user,
                 message: 'Update success',
@@ -89,7 +89,7 @@ class DeliveryAddressControlller {
     deleteAddress = async (req, res, next) => {
         try {
             const user = req.user;
-            const id = req.body.id;
+            const id = req.params.id;
 
             try {
                 user.address.id(id).remove();
@@ -117,6 +117,20 @@ class DeliveryAddressControlller {
 
             const response = {
                 address: user.address,
+            };
+            return res.json(response);
+        } catch (error) {
+            console.log(error);
+            if (!error.message) error.message = 'Something went wrong';
+            next(error);
+        }
+    };
+    getAddressByID = async (req, res, next) => {
+        try {
+            const user = req.user;
+
+            const response = {
+                address: user.address.id(req.params.id),
             };
             return res.json(response);
         } catch (error) {
