@@ -38,8 +38,14 @@ function verifyToken(req, res, next = () => {}) {
 function verifyTokenAndAuthorization(req, res, next) {
     verifyToken(req, res, async () => {
         try {
-            const user = await userModel.findOne({ _id: req.decodeData.id });
-            req.user = user;
+            try {
+                const user = await userModel.findOne({
+                    _id: req.decodeData.id,
+                });
+                req.user = user;
+            } catch (error) {
+                throw new CustomError(404, 'User not exits');
+            }
             next();
         } catch (error) {
             console.log(error);
@@ -56,7 +62,14 @@ function verifyTokenAndAuthorization(req, res, next) {
 function verifyTokenAndAuthorizationAdmin(req, res, next) {
     verifyToken(req, res, async () => {
         try {
-            const user = await userModel.findOne({ _id: req.decodeData.id });
+            try {
+                const user = await userModel.findOne({
+                    _id: req.decodeData.id,
+                });
+            } catch (error) {
+                throw new CustomError(404, 'User not exits');
+            }
+
             if (!user.isSeller) throw new Error();
             req.user = user;
             next();
