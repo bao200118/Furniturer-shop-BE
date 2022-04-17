@@ -12,7 +12,7 @@ function route(app) {
     app.use('/api/address', addressRoute);
     // app.use('/api/cart', cartRoute);
     app.use('/api/category', categoryRoute);
-    // app.use('/api/order', orderRoute);
+    app.use('/api/order', orderRoute);
     app.use('/api/product', productRoute);
     app.use('/api/user', userRoute);
 

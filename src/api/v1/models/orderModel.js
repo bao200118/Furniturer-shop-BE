@@ -7,13 +7,13 @@ const Order = new Schema({
     customerID: { type: Schema.Types.ObjectId, required: true },
     customerName: { type: String, required: true },
     phone: { type: String, required: true },
-    address: {
-        landNumber: { type: String, default: '' },
-        ward: { type: String, default: '' },
-        district: { type: String, default: '' },
-        province: { type: String, default: '' },
-    },
-    product: [{ type: Schema.Types.ObjectId }],
+    address: { type: String, required: true },
+    products: [
+        {
+            product: { type: Schema.Types.ObjectId, default: '' },
+            quantity: { type: Number, default: 0 },
+        },
+    ],
     totalPrice: { type: Number, default: 0 },
     isPaid: { type: Boolean, default: false },
     paymentMethod: { type: String, default: 'cash' },

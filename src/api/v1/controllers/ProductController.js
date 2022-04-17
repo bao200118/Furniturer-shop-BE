@@ -47,7 +47,6 @@ class ProductController {
 
             return res.status(201).json(response);
         } catch (error) {
-            console.log(error);
             if (!error.message) error.message = 'Something went wrong';
             next(error);
         }
@@ -67,20 +66,24 @@ class ProductController {
             if (product) {
                 throw new CustomError(403, 'Product already exists');
             } else {
-                await productModel
-                    .findByIdAndUpdate(req.params.id, {
-                        name: req.body.name,
-                        category: req.body.category,
-                        image: req.body.image,
-                        description: req.body.description,
-                        size: req.body.size,
-                        color: req.body.color,
-                        material: req.body.material,
-                        weight: req.body.weight,
-                        inStock: req.body.inStock,
-                        price: req.body.price,
-                    })
-                    .exec();
+                try {
+                    await productModel
+                        .findByIdAndUpdate(req.params.id, {
+                            name: req.body.name,
+                            category: req.body.category,
+                            image: req.body.image,
+                            description: req.body.description,
+                            size: req.body.size,
+                            color: req.body.color,
+                            material: req.body.material,
+                            weight: req.body.weight,
+                            inStock: req.body.inStock,
+                            price: req.body.price,
+                        })
+                        .exec();
+                } catch (error) {
+                    throw new CustomError(404, 'Product not exists');
+                }
             }
 
             product = await productModel.findById(req.params.id);
@@ -91,7 +94,6 @@ class ProductController {
             };
             return res.json(response);
         } catch (error) {
-            console.log(error);
             if (!error.message) error.message = 'Something went wrong';
             next(error);
         }
@@ -109,7 +111,6 @@ class ProductController {
             };
             return res.json(response);
         } catch (error) {
-            console.log(error);
             if (!error.message) error.message = 'Something went wrong';
             next(error);
         }
@@ -133,7 +134,6 @@ class ProductController {
             };
             return res.json(response);
         } catch (error) {
-            console.log(error);
             if (!error.message) error.message = 'Something went wrong';
             next(error);
         }
@@ -148,7 +148,6 @@ class ProductController {
             };
             return res.json(response);
         } catch (error) {
-            console.log(error);
             if (!error.message) error.message = 'Something went wrong';
             next(error);
         }
@@ -175,7 +174,6 @@ class ProductController {
             };
             return res.json(response);
         } catch (error) {
-            console.log(error);
             if (!error.message) error.message = 'Something went wrong';
             next(error);
         }

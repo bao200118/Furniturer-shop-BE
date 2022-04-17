@@ -40,7 +40,6 @@ class DeliveryAddressControlller {
             };
             return res.status(201).json(response);
         } catch (error) {
-            console.log(error);
             if (!error.message) error.message = 'Something went wrong';
             next(error);
         }
@@ -80,7 +79,6 @@ class DeliveryAddressControlller {
             };
             return res.json(response);
         } catch (error) {
-            console.log(error);
             if (!error.message) error.message = 'Something went wrong';
             next(error);
         }
@@ -105,7 +103,6 @@ class DeliveryAddressControlller {
             };
             return res.json(response);
         } catch (error) {
-            console.log(error);
             if (!error.message) error.message = 'Something went wrong';
             next(error);
         }
@@ -120,7 +117,6 @@ class DeliveryAddressControlller {
             };
             return res.json(response);
         } catch (error) {
-            console.log(error);
             if (!error.message) error.message = 'Something went wrong';
             next(error);
         }
@@ -134,7 +130,6 @@ class DeliveryAddressControlller {
             };
             return res.json(response);
         } catch (error) {
-            console.log(error);
             if (!error.message) error.message = 'Something went wrong';
             next(error);
         }
