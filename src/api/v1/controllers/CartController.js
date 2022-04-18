@@ -1,41 +1,51 @@
 const { json } = require('express/lib/response');
-const cart = require('../models/userModel');
+const { default: mongoose } = require('mongoose');
+const cartModel = require('../models/cartModel');
+const productModel = require('../models/productModel');
 const { CustomError } = require('../Util/CustomError');
 
 class CartController {
-    checkAddressExist = (arrOldAddress, newAddress) => {
-        for (let i = 0; i < arrOldAddress.length; i++) {
-            const oldAddress = {
-                landNumber: arrOldAddress[i].landNumber,
-                ward: arrOldAddress[i].ward,
-                district: arrOldAddress[i].district,
-                province: arrOldAddress[i].province,
-            };
-            if (JSON.stringify(oldAddress) === JSON.stringify(newAddress)) {
-                throw new CustomError(409, 'Address already exist');
-            }
-        }
-    };
-
-    addAddress = async (req, res, next) => {
+    addProductToCart = async (req, res, next) => {
         try {
-            const user = req.user;
+            if (!(await productModel.findById(req.body.productID))) {
+                throw new CustomError(400, 'Product not exists');
+            }
 
-            const newAddress = {
-                landNumber: req.body.landNumber,
-                ward: req.body.ward,
-                district: req.body.district,
-                province: req.body.province,
-            };
+            let userCart = await cartModel.findOne({ id: req.user._id });
+            const productDuplicate = userCart.products.find((value) => {
+                return value.product == req.body.productID;
+            });
 
-            this.checkAddressExist(user.address, newAddress);
+            console.log(typeof req.body.quantity);
 
-            user.address.push(newAddress);
-
-            user.save();
+            if (productDuplicate) {
+                userCart = await cartModel.findOneAndUpdate(
+                    {
+                        id: req.user._id,
+                        'products.product': new mongoose.Types.ObjectId(
+                            req.body.productID,
+                        ),
+                    },
+                    {
+                        $set: {
+                            'products.$.quantity':
+                                productDuplicate.quantity + +req.body.quantity,
+                        },
+                    },
+                    {
+                        new: true,
+                    },
+                );
+            } else {
+                userCart.products.push({
+                    product: req.body.productID,
+                    quantity: req.body.quantity,
+                });
+                userCart = await userCart.save();
+            }
 
             const response = {
-                user,
+                userCart,
                 message: 'Add success',
             };
             return res.status(201).json(response);
@@ -46,36 +56,20 @@ class CartController {
         }
     };
 
-    updateAddress = async (req, res, next) => {
+    updateCart = async (req, res, next) => {
         try {
-            const user = req.user;
-            const id = req.body.id;
-
-            const newAddress = {
-                landNumber: req.body.landNumber,
-                ward: req.body.ward,
-                district: req.body.district,
-                province: req.body.province,
-            };
-
-            this.checkAddressExist(user.address, newAddress);
-
-            await userModel
-                .findOneAndUpdate(
-                    { _id: user._id, 'address._id': id },
-                    {
-                        $set: {
-                            'address.$.landNumber': newAddress.landNumber,
-                            'address.$.ward': newAddress.ward,
-                            'address.$.district': newAddress.district,
-                            'address.$.province': newAddress.province,
-                        },
-                    },
-                )
-                .exec();
+            const updateCart = await cartModel.findOneAndUpdate(
+                { id: req.user._id },
+                {
+                    products: req.body.products,
+                },
+                {
+                    new: true,
+                },
+            );
 
             const response = {
-                user,
+                updateCart,
                 message: 'Update success',
             };
             return res.json(response);
@@ -86,22 +80,21 @@ class CartController {
         }
     };
 
-    deleteAddress = async (req, res, next) => {
+    makeCartEmpty = async (req, res, next) => {
         try {
-            const user = req.user;
-            const id = req.body.id;
-
-            try {
-                user.address.id(id).remove();
-            } catch (error) {
-                throw new CustomError(404, 'Address not exists');
-            }
-
-            user.save();
+            const updateCart = await cartModel.findOneAndUpdate(
+                { id: req.user._id },
+                {
+                    products: [],
+                },
+                {
+                    new: true,
+                },
+            );
 
             const response = {
-                user,
-                message: 'Remove success',
+                updateCart,
+                message: 'Cart is now empty success',
             };
             return res.json(response);
         } catch (error) {
@@ -111,12 +104,12 @@ class CartController {
         }
     };
 
-    getAllAddress = async (req, res, next) => {
+    getAllProductInCart = async (req, res, next) => {
         try {
-            const user = req.user;
+            const cart = await cartModel.findOne({ id: req.user._id });
 
             const response = {
-                address: user.address,
+                products: cart.products,
             };
             return res.json(response);
         } catch (error) {
@@ -127,4 +120,4 @@ class CartController {
     };
 }
 
-module.exports = new DeliveryAddressControlller();
+module.exports = new CartController();

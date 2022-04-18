@@ -76,12 +76,6 @@ class OrderController {
             } catch (error) {
                 throw new CustomError(404, 'Order not exists');
             }
-            //Check user have permission to change status this order
-            if (!order.customerID.equals(req.user._id))
-                throw new CustomError(
-                    401,
-                    "You don't have permission to do this",
-                );
 
             if (order.status != 'Cancelled') {
                 await orderModel

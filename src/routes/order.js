@@ -12,7 +12,9 @@ router.use(verifyTokenAndAuthorization);
 router.get('/', orderController.getAllOrder);
 
 router.post('/', orderController.addOrder);
+
+router.use(verifyTokenAndAuthorizationAdmin);
 router.put('/:id/cancel', orderController.cancelledOrder);
-router.put('/:id/changeStatus/:status', orderController.updateOrderStatus);
+router.put('/:id/changestatus/:status', orderController.updateOrderStatus);
 
 module.exports = router;

@@ -9,12 +9,12 @@ const {
 // Get all product
 router.get('/', productController.getAllProduct);
 //Get product by list id
-router.post('/getProductByListID', productController.getAllProductByListID);
+router.post('/getproductbylistid', productController.getAllProductByListID);
 
 router.use(verifyTokenAndAuthorizationAdmin);
 
 router.post('/', productController.addProduct);
-router.post('/:id/inStock', productController.changeProductInStock);
+router.post('/:id/instock', productController.changeProductInStock);
 router.put('/:id', productController.updateProduct);
 router.delete('/:id', productController.deleteProduct);
 

@@ -9,6 +9,6 @@ const {
 
 router.use(verifyTokenAndAuthorization);
 router.put('/', userController.updateUser);
-router.put('/changePassword', userController.changePassword);
+router.put('/changepassword', userController.changePassword);
 
 module.exports = router;

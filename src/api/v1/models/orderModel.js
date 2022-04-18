@@ -10,6 +10,7 @@ const Order = new Schema({
     address: { type: String, required: true },
     products: [
         {
+            //Product ID
             product: { type: Schema.Types.ObjectId, default: '' },
             quantity: { type: Number, default: 0 },
         },

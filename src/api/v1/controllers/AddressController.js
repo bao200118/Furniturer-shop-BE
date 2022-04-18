@@ -4,16 +4,22 @@ const { CustomError } = require('../Util/CustomError');
 
 class DeliveryAddressControlller {
     checkAddressExist = (arrOldAddress, newAddress) => {
-        for (let i = 0; i < arrOldAddress.length; i++) {
-            const oldAddress = {
-                landNumber: arrOldAddress[i].landNumber,
-                ward: arrOldAddress[i].ward,
-                district: arrOldAddress[i].district,
-                province: arrOldAddress[i].province,
-            };
-            if (JSON.stringify(oldAddress) === JSON.stringify(newAddress)) {
-                throw new CustomError(409, 'Address already exist');
-            }
+        //If exists 1 address throw error "Address already exists"
+        if (
+            arrOldAddress.some((value) => {
+                const oldAddress = {
+                    landNumber: value.landNumber,
+                    ward: value.ward,
+                    district: value.district,
+                    province: value.province,
+                };
+
+                return (
+                    JSON.stringify(oldAddress) === JSON.stringify(newAddress)
+                );
+            })
+        ) {
+            throw new CustomError(409, 'Address already exists');
         }
     };
 
