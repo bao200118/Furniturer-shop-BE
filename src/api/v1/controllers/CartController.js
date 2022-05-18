@@ -2,7 +2,7 @@ const { json } = require('express/lib/response');
 const { default: mongoose } = require('mongoose');
 const cartModel = require('../models/cartModel');
 const productModel = require('../models/productModel');
-const { CustomError } = require('../Util/CustomError');
+const { CustomError } = require('../util/CustomError');
 
 class CartController {
     addProductToCart = async (req, res, next) => {

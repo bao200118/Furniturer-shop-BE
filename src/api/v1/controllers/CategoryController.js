@@ -1,7 +1,7 @@
 const { json } = require('express/lib/response');
 const categoryModel = require('../models/categoryModel');
 const productModel = require('../models/productModel');
-const { CustomError } = require('../Util/CustomError');
+const { CustomError } = require('../util/CustomError');
 
 class CategoryController {
     addCategory = async (req, res, next) => {

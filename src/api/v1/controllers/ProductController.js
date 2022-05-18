@@ -1,7 +1,7 @@
 const { json } = require('express/lib/response');
 const { findByIdAndUpdate } = require('../models/productModel');
 const productModel = require('../models/productModel');
-const { CustomError } = require('../Util/CustomError');
+const { CustomError } = require('../util/CustomError');
 
 class ProductController {
     addProduct = async (req, res, next) => {

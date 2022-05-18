@@ -1,7 +1,7 @@
 const { json } = require('express/lib/response');
 const bcrypt = require('bcrypt');
 const userModel = require('../models/userModel');
-const { CustomError } = require('../Util/CustomError');
+const { CustomError } = require('../util/CustomError');
 
 class UserController {
     updateUser = async (req, res, next) => {

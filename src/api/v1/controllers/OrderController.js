@@ -1,6 +1,6 @@
 const { json } = require('express/lib/response');
 const orderModel = require('../models/orderModel');
-const { CustomError } = require('../Util/CustomError');
+const { CustomError } = require('../util/CustomError');
 
 class OrderController {
     addOrder = async (req, res, next) => {

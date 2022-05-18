@@ -1,6 +1,6 @@
 const { json } = require('express/lib/response');
 const userModel = require('../models/userModel');
-const { CustomError } = require('../Util/CustomError');
+const { CustomError } = require('../util/CustomError');
 
 class DeliveryAddressControlller {
     checkAddressExist = (arrOldAddress, newAddress) => {
