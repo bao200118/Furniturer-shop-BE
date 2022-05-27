@@ -62,6 +62,7 @@ class AuthController {
 
     async login(req, res, next) {
         try {
+            console.log(req.body);
             // Check email is exists
             const email = req.body.email;
             const password = req.body.password;
