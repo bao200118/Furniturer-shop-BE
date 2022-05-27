@@ -6,7 +6,7 @@ class CustomError {
 }
 
 function handleError(err, req, res, next) {
-    console.log('handle error call');
+    console.log(err);
     return res.status(err.status || 500).send({
         status: err.status,
         message: err.message,
