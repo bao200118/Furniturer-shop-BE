@@ -110,7 +110,7 @@ class AuthController {
             const response = {
                 accessToken,
                 refreshToken,
-                user: email,
+                user,
                 message: 'Sign-in success',
             };
             return res.status(200).json(response);
