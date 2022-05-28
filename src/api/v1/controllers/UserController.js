@@ -27,12 +27,16 @@ class UserController {
 
     changePassword = async (req, res, next) => {
         try {
+            let user = req.user;
             const SALT_ROUNDS = 10;
+            if (!bcrypt.compareSync(req.body.oldPassword, user.password))
+                throw new CustomError(400, 'Wrong password');
+
             const hashPassword = bcrypt.hashSync(
-                req.body.password,
+                req.body.newPassword,
                 SALT_ROUNDS,
             );
-            let user = req.user;
+
             user.password = hashPassword;
             user.save();
 
