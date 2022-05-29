@@ -11,14 +11,17 @@ const User = new Schema({
     isSeller: { type: Boolean, default: false },
     gender: { type: String, default: '' },
     phone: { type: String, default: '' },
-    address: [
-        {
-            landNumber: { type: String, default: '' },
-            ward: { type: String, default: '' },
-            district: { type: String, default: '' },
-            province: { type: String, default: '' },
-        },
-    ],
+    address: {
+        type: [
+            {
+                landNumber: { type: String, default: '' },
+                ward: { type: String, default: '' },
+                district: { type: String, default: '' },
+                province: { type: String, default: '' },
+            },
+        ],
+        default: [],
+    },
     refreshToken: { type: String, default: '' },
     createAt: { type: Date, default: Date.now },
     updateAt: { type: Date, default: Date.now },

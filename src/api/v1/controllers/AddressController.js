@@ -36,7 +36,7 @@ class DeliveryAddressControlller {
 
             this.checkAddressExist(user.address, newAddress);
 
-            user.address.push(newAddress);
+            user.address.shift(newAddress);
 
             user.save();
 
