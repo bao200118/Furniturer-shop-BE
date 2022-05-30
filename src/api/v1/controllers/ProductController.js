@@ -82,6 +82,7 @@ class ProductController {
                         })
                         .exec();
                 } catch (error) {
+                    console.log(error);
                     throw new CustomError(404, 'Product not exists');
                 }
             }

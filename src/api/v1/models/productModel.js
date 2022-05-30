@@ -7,11 +7,7 @@ const Product = new Schema({
     id: ObjectId,
     name: { type: String, default: '' },
     category: [{ type: String }],
-    image: [
-        {
-            url: { type: String, default: '' },
-        },
-    ],
+    image: [{ type: String, default: '' }],
     description: { type: String, default: '' },
     size: {
         width: { type: Number, default: 0 },
