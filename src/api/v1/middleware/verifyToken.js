@@ -62,8 +62,9 @@ function verifyTokenAndAuthorization(req, res, next) {
 function verifyTokenAndAuthorizationAdmin(req, res, next) {
     verifyToken(req, res, async () => {
         try {
+            let user;
             try {
-                const user = await userModel.findOne({
+                user = await userModel.findOne({
                     _id: req.decodeData.id,
                 });
             } catch (error) {
