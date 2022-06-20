@@ -6,7 +6,7 @@ const {
     verifyTokenAndAuthorizationAdmin,
 } = require('../api/v1/middleware/verifyToken');
 
-//Get all product
+//Get all category
 router.get('/', categoryControlller.getAllCategory);
 //Get all product by category
 router.get('/:categoryName', categoryControlller.getAllProductByCategoryName);

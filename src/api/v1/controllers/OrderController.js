@@ -114,6 +114,63 @@ class OrderController {
             next(error);
         }
     };
+
+    getOrderById = async (req, res, next) => {
+        try {
+            const order = await orderModel.findOne({
+                customerID: req.user._id,
+                _id: req.params.id,
+            });
+
+            const response = {
+                order,
+            };
+            return res.json(response);
+        } catch (error) {
+            if (!error.message) error.message = 'Something went wrong';
+            next(error);
+        }
+    };
+
+    updateOrder = async (req, res, next) => {
+        try {
+            let order;
+            //Check id order is correct
+            try {
+                order = await orderModel.findById(req.params.id);
+            } catch (error) {
+                throw new CustomError(404, 'Order not exists');
+            }
+
+            if (order.status != 'Cancelled') {
+                await orderModel
+                    .findOneAndUpdate(
+                        { _id: req.params.id },
+                        {
+                            customerName: req.body.customerName,
+                            phone: req.body.phone,
+                            address: req.body.address,
+                            isPaid: req.body.isPaid,
+                            paymentMethod: req.body.paymentMethod,
+                            status: 'Confirm payment method',
+                            note: req.body.note,
+                        },
+                    )
+                    .exec();
+            } else throw new CustomError(403, 'Order have cancelled');
+
+            order = await orderModel.findById(req.params.id);
+
+            const response = {
+                order,
+                message: 'Order update success',
+            };
+            return res.json(response);
+        } catch (error) {
+            if (!error.message) error.message = 'Something went wrong';
+            next(error);
+        }
+    };
 }
 
 module.exports = new OrderController();

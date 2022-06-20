@@ -10,8 +10,10 @@ const {
 router.use(verifyTokenAndAuthorization);
 // Get all order by customer ID
 router.get('/', orderController.getAllOrder);
+router.get('/:id', orderController.getOrderById);
 
 router.post('/', orderController.addOrder);
+router.put('/:id', orderController.updateOrder);
 
 router.use(verifyTokenAndAuthorizationAdmin);
 router.put('/:id/cancel', orderController.cancelledOrder);
