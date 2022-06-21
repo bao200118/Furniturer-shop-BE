@@ -7,7 +7,7 @@ const Order = new Schema({
     customerID: { type: Schema.Types.ObjectId, required: true },
     customerName: { type: String, required: true },
     phone: { type: String, required: true },
-    address: { type: String, required: true },
+    address: { type: String },
     products: [
         {
             //Product ID
