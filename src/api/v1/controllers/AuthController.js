@@ -119,6 +119,69 @@ class AuthController {
         }
     }
 
+    async loginSeller(req, res, next) {
+        try {
+            // Check email is exists
+            const email = req.body.email;
+            const password = req.body.password;
+
+            const user = await userModel.findOne({ email });
+            if (!user) {
+                throw new CustomError(404, 'Email not exists');
+            }
+
+            if (!user.isAdmin) {
+                throw new CustomError(403, "Email don't have permission");
+            }
+
+            // Check password is correct
+            const isPasswordValid = bcrypt.compareSync(password, user.password);
+            if (!isPasswordValid) {
+                throw new CustomError(403, 'Wrong password');
+            }
+
+            //Create access token and refresh token
+            const accessToken = jwt.sign(
+                {
+                    id: user._id,
+                    isSeller: user.isSeller,
+                },
+                process.env.ACCESS_TOKEN_SECRET,
+                {
+                    algorithm: 'HS256',
+                    expiresIn: process.env.ACCESS_TOKEN_LIFE,
+                },
+            );
+
+            const refreshToken = jwt.sign(
+                {
+                    id: user._id,
+                    isSeller: user.isSeller,
+                },
+                process.env.REFRESH_TOKEN_SECRET,
+                {
+                    algorithm: 'HS256',
+                    expiresIn: process.env.REFRESH_TOKEN_LIFE,
+                },
+            );
+
+            //Save refresh token to user
+            user.refreshToken = refreshToken;
+            user.save();
+
+            const response = {
+                accessToken,
+                refreshToken,
+                user,
+                message: 'Sign-in success',
+            };
+            return res.status(200).json(response);
+        } catch (error) {
+            if (!error.message) error.message = 'Something went wrong';
+            next(error);
+        }
+    }
+
     async refresh(req, res, next) {
         try {
             //Check access token is in body
