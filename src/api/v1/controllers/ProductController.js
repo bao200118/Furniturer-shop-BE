@@ -185,7 +185,7 @@ class ProductController {
             const product = await productModel.findById(req.params.id);
 
             const response = {
-                products: listProduct,
+                product,
             };
             return res.json(response);
         } catch (error) {
