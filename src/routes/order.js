@@ -16,6 +16,8 @@ router.post('/', orderController.addOrder);
 router.put('/:id', orderController.updateOrder);
 
 router.use(verifyTokenAndAuthorizationAdmin);
+//get all customer order which have paid
+router.get('/customerPaidOrder/all', orderController.getAllCustomerPaidOrder);
 router.put('/:id/cancel', orderController.cancelledOrder);
 router.put('/:id/changestatus/:status', orderController.updateOrderStatus);
 

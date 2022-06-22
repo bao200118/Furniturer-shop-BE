@@ -171,6 +171,22 @@ class OrderController {
             next(error);
         }
     };
+
+    getAllCustomerPaidOrder = async (req, res, next) => {
+        try {
+            const order = await orderModel.find({
+                isPaid: true,
+            });
+
+            const response = {
+                order,
+            };
+            return res.json(response);
+        } catch (error) {
+            if (!error.message) error.message = 'Something went wrong';
+            next(error);
+        }
+    };
 }
 
 module.exports = new OrderController();
