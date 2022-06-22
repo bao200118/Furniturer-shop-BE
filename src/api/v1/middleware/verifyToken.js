@@ -13,7 +13,7 @@ function verifyToken(req, res, next = () => {}) {
     try {
         const authHeader = req.headers.authorization;
         if (!authHeader) {
-            throw new CustomError(400, 'You are not authenticated');
+            throw new CustomError(401, 'You are not authenticated');
         }
 
         let accessToken = authHeader.split(' ')[1];
@@ -23,7 +23,7 @@ function verifyToken(req, res, next = () => {}) {
             process.env.ACCESS_TOKEN_SECRET,
             { ignoreExpiration: true },
             (error, decode) => {
-                if (error) throw new CustomError(403, 'Token is invalid');
+                if (error) throw new CustomError(400, 'Token is invalid');
                 else {
                     req.decodeData = decode;
                     next();
@@ -44,14 +44,14 @@ function verifyTokenAndAuthorization(req, res, next) {
                 });
                 req.user = user;
             } catch (error) {
-                throw new CustomError(404, 'User not exits');
+                throw new CustomError(400, 'User not exits');
             }
             next();
         } catch (error) {
             console.log(error);
             next(
                 new CustomError(
-                    403,
+                    401,
                     "You don't have permission to do this action!",
                 ),
             );
@@ -68,7 +68,7 @@ function verifyTokenAndAuthorizationAdmin(req, res, next) {
                     _id: req.decodeData.id,
                 });
             } catch (error) {
-                throw new CustomError(404, 'User not exits');
+                throw new CustomError(400, 'User not exits');
             }
 
             if (!user.isSeller) throw new Error();
@@ -78,7 +78,7 @@ function verifyTokenAndAuthorizationAdmin(req, res, next) {
             console.log(error);
             next(
                 new CustomError(
-                    403,
+                    401,
                     "You don't have permission to do this action!",
                 ),
             );
