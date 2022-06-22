@@ -179,6 +179,20 @@ class ProductController {
             next(error);
         }
     };
+
+    getProductById = async (req, res, next) => {
+        try {
+            const product = await productModel.findById(req.params.id);
+
+            const response = {
+                products: listProduct,
+            };
+            return res.json(response);
+        } catch (error) {
+            if (!error.message) error.message = 'Something went wrong';
+            next(error);
+        }
+    };
 }
 
 module.exports = new ProductController();

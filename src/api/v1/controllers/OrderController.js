@@ -174,12 +174,12 @@ class OrderController {
 
     getAllCustomerPaidOrder = async (req, res, next) => {
         try {
-            const order = await orderModel.find({
+            const orders = await orderModel.find({
                 isPaid: true,
             });
 
             const response = {
-                order,
+                orders,
             };
             return res.json(response);
         } catch (error) {

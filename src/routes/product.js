@@ -8,6 +8,7 @@ const {
 
 // Get all product
 router.get('/', productController.getAllProduct);
+router.get('/:id', productController.getProductById);
 //Get product by list id
 router.post('/getproductbylistid', productController.getAllProductByListID);
 
