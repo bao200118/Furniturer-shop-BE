@@ -23,7 +23,7 @@ function verifyToken(req, res, next = () => {}) {
             process.env.ACCESS_TOKEN_SECRET,
             { ignoreExpiration: true },
             (error, decode) => {
-                if (error) throw new CustomError(400, 'Token is invalid');
+                if (error) throw new CustomError(401, 'Token is invalid');
                 else {
                     req.decodeData = decode;
                     next();
