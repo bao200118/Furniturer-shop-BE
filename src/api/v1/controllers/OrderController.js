@@ -47,10 +47,14 @@ class OrderController {
                     "You don't have permission to do this",
                 );
 
+            let cancelReason = req.body.cancelReason;
+            if (typeof cancelReason !== 'string') {
+                cancelReason = '';
+            }
             await orderModel
                 .findOneAndUpdate(
                     { _id: req.params.id },
-                    { status: 'Cancelled' },
+                    { status: 'Cancelled', note: cancelReason },
                 )
                 .exec();
 
