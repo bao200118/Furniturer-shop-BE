@@ -52,6 +52,20 @@ class UserController {
             next(error);
         }
     };
+
+    getAllUser = async (req, res, next) => {
+        try {
+            const users = await userModel.find();
+
+            const response = {
+                users,
+            };
+            return res.json(response);
+        } catch (error) {
+            if (!error.message) error.message = 'Something went wrong';
+            next(error);
+        }
+    };
 }
 
 module.exports = new UserController();
