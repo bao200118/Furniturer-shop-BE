@@ -187,6 +187,20 @@ class OrderController {
             next(error);
         }
     };
+
+    getAllCustomerOrder = async (req, res, next) => {
+        try {
+            const orders = await orderModel.find();
+
+            const response = {
+                orders,
+            };
+            return res.json(response);
+        } catch (error) {
+            if (!error.message) error.message = 'Something went wrong';
+            next(error);
+        }
+    };
 }
 
 module.exports = new OrderController();
