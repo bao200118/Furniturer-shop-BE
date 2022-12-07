@@ -2,9 +2,9 @@
     "version": 2,
     "name": "Đây là 1 cái backend nodejs furniturer",
     "builds": [
-       { "src": "index.js", "use": "@now/node" }
+       { "src": "src/index.js", "use": "@now/node" }
     ],
     "routes": [
-       { "src": "/src/(.*)", "dest": "index.js" }
+       { "src": "/src/(.*)", "dest": "src/index.js" }
     ]
  }
