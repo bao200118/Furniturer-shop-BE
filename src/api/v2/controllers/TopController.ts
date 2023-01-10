@@ -14,7 +14,7 @@ class TopController {
 			const condition = [{ $and: [] }];
 			// Determine with a group filter conditon product split by or
 			let indexOrConjunction = 0;
-			let sort = "DESC";
+			let sort = "ASC";
 			for (let index = 0; index < parameters.length; index++) {
 				const param = parameters[index];
 				if (param == null) continue;

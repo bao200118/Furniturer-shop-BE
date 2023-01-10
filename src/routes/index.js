@@ -6,6 +6,7 @@ const orderRoute = require('./order');
 const productRoute = require('./product');
 const userRoute = require('./user');
 const topRoute = require('./top');
+const webhookRoute = require('./webhook');
 const { handleError } = require('../api/v1/util/CustomError');
 
 function route(app) {
@@ -17,6 +18,7 @@ function route(app) {
     app.use('/api/product', productRoute);
     app.use('/api/user', userRoute);
     app.use('/api/top', topRoute);
+    app.use('/api/webhook', webhookRoute);
     app.use(handleError);
 }
 
