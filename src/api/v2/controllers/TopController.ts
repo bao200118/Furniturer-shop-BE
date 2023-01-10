@@ -46,9 +46,9 @@ class TopController {
 			} else {
 				product = await productModel
 					.find()
+					.or(condition)
 					.limit(Number.parseInt(pageSize || "3"))
 					.skip(Number.parseInt(page || "1"))
-					.or(condition)
 					.sort({ price: sort })
 					.exec();
 			}
