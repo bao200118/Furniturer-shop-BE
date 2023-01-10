@@ -7,6 +7,7 @@ interface AndConditonObject {
 class TopController {
 	getTopProduct = async (req: Request, res: Response, next: NextFunction) => {
 		try {
+			const startTime = Date.now();
 			const parameters = req.body;
 			const { page, pageSize } = req.params;
 			const condition = [{ $and: [] }];
@@ -24,7 +25,7 @@ class TopController {
 						this.filterCategory(condition, indexOrConjunction, param.category);
 						break;
 					case "conjunction":
-						if (index == parameters.length - 1) break;
+						if (index === parameters.length - 1 || index === 0) break;
 						indexOrConjunction = this.filterConjunction(
 							condition,
 							indexOrConjunction,
@@ -35,16 +36,27 @@ class TopController {
 						sort = this.filterPrice(param);
 				}
 			}
-			const product = await productModel
-				.find()
-				.limit(Number.parseInt(pageSize || "3"))
-				.skip(Number.parseInt(page || "1"))
-				.or(condition)
-				.sort({ price: sort })
-				.exec();
+			let product;
+			if (condition[0].$and.length === 0) {
+				product = await productModel
+					.find()
+					.limit(Number.parseInt(pageSize || "3"))
+					.skip(Number.parseInt(page || "1"))
+					.sort({ price: sort });
+			} else {
+				product = await productModel
+					.find()
+					.limit(Number.parseInt(pageSize || "3"))
+					.skip(Number.parseInt(page || "1"))
+					.or(condition)
+					.sort({ price: sort })
+					.exec();
+			}
 			const response = {
 				product,
 			};
+			const endTime = Date.now();
+			console.log("Time:" + (endTime - startTime));
 			return res.json(response);
 		} catch (error: any) {
 			if (!error.message) error.message = "Something went wrong";
