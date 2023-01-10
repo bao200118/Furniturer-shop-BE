@@ -9,7 +9,8 @@ class TopController {
 		try {
 			const startTime = Date.now();
 			const parameters = req.body;
-			const { page, pageSize } = req.params;
+			const page = Number.parseInt(req.params.page);
+			const pageSize = Number.parseInt(req.params.pageSize);
 			const condition = [{ $and: [] }];
 			// Determine with a group filter conditon product split by or
 			let indexOrConjunction = 0;
@@ -40,15 +41,15 @@ class TopController {
 			if (condition[0].$and.length === 0) {
 				product = await productModel
 					.find()
-					.limit(Number.parseInt(pageSize || "3"))
-					.skip(Number.parseInt(page || "1"))
+					.limit(pageSize || 3)
+					.skip((page - 1) * pageSize || 0)
 					.sort({ price: sort });
 			} else {
 				product = await productModel
 					.find()
 					.or(condition)
-					.limit(Number.parseInt(pageSize || "3"))
-					.skip(Number.parseInt(page || "1"))
+					.limit(pageSize || 3)
+					.skip((page - 1) * pageSize || 0)
 					.sort({ price: sort })
 					.exec();
 			}
