@@ -2,10 +2,13 @@ const express = require('express');
 const router = express.Router();
 
 const orderController = require('../api/v1/controllers/OrderController');
+const orderControllerV2 = require('../api/v2/controllers/OrderController')
 const {
     verifyTokenAndAuthorizationAdmin,
     verifyTokenAndAuthorization,
 } = require('../api/v1/middleware/verifyToken');
+
+router.post('/chatbot-order', orderControllerV2.createOrderByChatbot)
 
 router.use(verifyTokenAndAuthorization);
 // Get all order by customer ID
