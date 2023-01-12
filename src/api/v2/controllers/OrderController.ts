@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from "express";
-import orderModel from "../../v2/models/orderModel";
+import jwt, { JwtPayload, Secret } from "jsonwebtoken";
+import orderModel from "../models/orderModel";
 
 class OrderController {
 	createOrderByChatbot = async (
@@ -9,7 +10,9 @@ class OrderController {
 	) => {
 		try {
 			const body = req.body;
-			const newOrder = {
+			const authHeader = req.headers.authorization;
+			let newOrder: any;
+      newOrder = {
 				customerID: "000000000000000000000000",
 				customerName: body.customerName,
 				phone: body.phone,
@@ -20,6 +23,21 @@ class OrderController {
 				paymentMethod: "Cash on delivery",
 				note: "Chatbot create order",
 			};
+			if (authHeader) {
+				let accessToken = authHeader.split(" ")[1];
+				jwt.verify(
+					accessToken,
+					process.env.ACCESS_TOKEN_SECRET as Secret,
+					{ ignoreExpiration: true },
+					(error: any, decode) => {
+						if (!error) {
+              const payload = decode as JwtPayload
+              newOrder.customerID = payload.id;
+						}
+					}
+				);
+			}
+
 
 			const newOrderSave = await orderModel.create(newOrder);
 

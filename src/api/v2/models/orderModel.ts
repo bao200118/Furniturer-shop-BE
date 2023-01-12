@@ -1,6 +1,6 @@
 import { Schema, model, Types, models } from 'mongoose';
 
-interface IOrder {
+export interface IOrder {
   customerID: Types.ObjectId,
   customerName: string,
   phone: string,

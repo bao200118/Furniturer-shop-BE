@@ -27,6 +27,7 @@
     "vercel": "^28.7.2"
   },
   "devDependencies": {
+    "@types/jsonwebtoken": "^9.0.0",
     "@types/node": "^18.11.18",
     "husky": "^7.0.4",
     "lint-staged": "^12.3.7",
