@@ -9,8 +9,8 @@ class TopController {
 		try {
 			const startTime = Date.now();
 			const parameters = req.body;
-			const page = Number.parseInt(req.params.page);
-			const pageSize = Number.parseInt(req.params.pageSize);
+			const page = Number.parseInt(req.query.page as string);
+			const pageSize = Number.parseInt(req.query.pageSize as string);
 			const condition = [{ $and: [] }];
 			// Determine with a group filter conditon product split by or
 			let indexOrConjunction = 0;
@@ -43,7 +43,8 @@ class TopController {
 					.find()
 					.limit(pageSize || 3)
 					.skip((page - 1) * pageSize || 0)
-					.sort({ price: sort });
+					.sort({ price: sort })
+					.exec();
 			} else {
 				product = await productModel
 					.find()
