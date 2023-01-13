@@ -20,6 +20,7 @@ class OrderController {
 				products: body.products,
 				totalPrice: body.totalPrice,
 				isPaid: false,
+				status: "Confirmed",
 				paymentMethod: "Cash on delivery",
 				note: "Chatbot create order",
 			};
