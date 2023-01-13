@@ -194,7 +194,7 @@ class OrderController {
 
     getAllCustomerOrder = async (req, res, next) => {
         try {
-            const orders = await orderModel.find();
+            const orders = await orderModel.find().sort("desc");
 
             const response = {
                 orders,
