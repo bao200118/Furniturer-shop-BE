@@ -5,6 +5,10 @@ const { CustomError } = require('../util/CustomError');
 class OrderController {
     addOrder = async (req, res, next) => {
         try {
+            let status = "Create order";
+            if(req.body.customerName && req.body.phone && req.body.address && req.body.paymentMethod) {
+                status = "Confirm payment method"
+            }
             const newOrder = {
                 customerID: req.user._id,
                 customerName: req.body.customerName,
@@ -14,7 +18,7 @@ class OrderController {
                 totalPrice: req.body.totalPrice,
                 isPaid: req.body.isPaid,
                 paymentMethod: req.body.paymentMethod,
-                status: req.body.status,
+                status: status,
                 note: req.body.note,
             };
 
