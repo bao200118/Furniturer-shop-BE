@@ -111,7 +111,7 @@ class OrderController {
         try {
             const order = await orderModel.find({
                 customerID: req.user._id,
-            });
+            }).sort({createAt: "desc"});
 
             const response = {
                 order,
