@@ -32,7 +32,7 @@ function route(app) {
             body: body,
           };
       
-          const apiUrl = `https://api.chatwork.com/v2/rooms/${this.CHATWORK_ROOM_TEST}/messages`;
+          const apiUrl = `https://api.chatwork.com/v2/rooms/${process.env.CHATWORK_ROOM_TEST}/messages`;
           try {
             await fetch(apiUrl, {
               method: 'POST',
