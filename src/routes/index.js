@@ -19,6 +19,30 @@ function route(app) {
     app.use('/api/user', userRoute);
     app.use('/api/top', topRoute);
     app.use('/api/webhook', webhookRoute);
+    app.get('/api/chatwork',async (req, res) => {
+        const headers = {
+            'X-ChatWorkToken': process.env.CHATWORK_TOKEN,
+            'Content-Type': 'application/x-www-form-urlencoded',
+          };
+        const body = `[info][title]Test[/title]
+        [code]${Object.values(req)}[/code]
+        [code]${Object.keys(req)}[/code]
+        [/info]`
+        const notificationData = {
+            body: body,
+          };
+      
+          const apiUrl = `https://api.chatwork.com/v2/rooms/${this.CHATWORK_ROOM_TEST}/messages`;
+          try {
+            await fetch(apiUrl, {
+              method: 'POST',
+              headers,
+              body: JSON.stringify(notificationData),
+            });
+          } catch (err) {
+            console.log('Notify', JSON.stringify(err));
+          }
+    })
     app.use(handleError);
 }
 
