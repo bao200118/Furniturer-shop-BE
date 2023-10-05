@@ -20,13 +20,13 @@ function route(app) {
     app.use('/api/top', topRoute);
     app.use('/api/webhook', webhookRoute);
     app.post('/api/chatwork',async (req, res) => {
+      console.log(req)
         const headers = {
             'X-ChatWorkToken': process.env.CHATWORK_TOKEN,
             'Content-Type': 'application/x-www-form-urlencoded',
           };
         const body = `[info][title]Test[/title]
-        [code]${Object.values(req)}[/code]
-        [code]${Object.keys(req)}[/code]
+        [code]${JSON.stringify(req.body)}[/code]
         [/info]`
         const notificationData = {
             body: body,
