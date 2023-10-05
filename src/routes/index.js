@@ -19,7 +19,7 @@ function route(app) {
     app.use('/api/user', userRoute);
     app.use('/api/top', topRoute);
     app.use('/api/webhook', webhookRoute);
-    app.get('/api/chatwork',async (req, res) => {
+    app.post('/api/chatwork',async (req, res) => {
         const headers = {
             'X-ChatWorkToken': process.env.CHATWORK_TOKEN,
             'Content-Type': 'application/x-www-form-urlencoded',
