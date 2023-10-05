@@ -19,7 +19,7 @@ function route(app) {
     app.use('/api/user', userRoute);
     app.use('/api/top', topRoute);
     app.use('/api/webhook', webhookRoute);
-    app.get('/api/chatwork',async (req, res) => {
+    app.post('/api/chatwork',async (req, res) => {
         const headers = {
             'X-ChatWorkToken': process.env.CHATWORK_TOKEN,
             'Content-Type': 'application/x-www-form-urlencoded',
@@ -32,7 +32,7 @@ function route(app) {
             body: body,
           };
       
-          const apiUrl = `https://api.chatwork.com/v2/rooms/${this.CHATWORK_ROOM_TEST}/messages`;
+          const apiUrl = `https://api.chatwork.com/v2/rooms/${process.env.CHATWORK_ROOM_TEST}/messages`;
           try {
             await fetch(apiUrl, {
               method: 'POST',
